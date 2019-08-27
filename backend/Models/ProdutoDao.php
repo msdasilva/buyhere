@@ -1,5 +1,7 @@
 <?php
 
+require_once "../Constante.php";
+
 class ProdutoDao {
     
     private $connection;
@@ -9,17 +11,16 @@ class ProdutoDao {
       $this->connection = Connection::getInstance();
     } 
     
-    public function salvar($produto) {
+    public function salvar(Produto $produto) {
         
         try {
             $this->connection->beginTransaction();
-            $this->stmt = $this->connection->prepare(Constante::INSERT_PRODUTO);
-            $this->stmt->bindParam(':nome', $produto->getNome());
-            $this->stmt->bindParam(':preco', $produto->getPreco());
-            $this->stmt->bindParam(':latitude', $produto->getLatitude());
-            $this->stmt->bindParam(':longetude', $produto->getLongetude());
-            $this->stmt->bindParam(':ativo', $produto->getAtivo());
-            $this->stmt->bindParam(':criacao', $produto->getCriacao());
+            $this->stmt = $this->connection->prepare("INSERT INTO produto (nome, preco, latitude, longetude, ativo, criacao) VALUES (:nome, :preco, :latitude, :longetude, :ativo, now())");
+            $this->stmt->bindValue(':nome', $produto->getNome());
+            $this->stmt->bindValue(':preco', $produto->getPreco());
+            $this->stmt->bindValue(':latitude', $produto->getLatitude());
+            $this->stmt->bindValue(':longetude', $produto->getLongetude());
+            $this->stmt->bindValue(':ativo', $produto->getAtivo());
             $this->stmt->execute();
             $this->connection->commit();
         } catch (\Throwable $th) {
@@ -28,18 +29,17 @@ class ProdutoDao {
         }
     }
     
-    public function alterar($produto) {
+    public function alterar(Produto $produto) {
         
         try {
             $this->connection->beginTransaction();
-            $this->stmt = $this->connection->prepare(Constante::UPDATE_PRODUTO);
-            $this->stmt->bindParam(':nome', $produto->getNome());
-            $this->stmt->bindParam(':preco', $produto->getPreco());
-            $this->stmt->bindParam(':latitude', $produto->getLatitude());
-            $this->stmt->bindParam(':longetude', $produto->getLongetude());
-            $this->stmt->bindParam(':ativo', $produto->getAtivo());
-            $this->stmt->bindParam(':modificacao', $produto->getModificacao());
-            $this->stmt->bindParam(':id', $produto->getId());
+            $this->stmt = $this->connection->prepare("UPDATE produto nome = :nome, preco = :preco, latitude = :latitude, longetude = :longetude, ativo = :ativo, modificacao = NOW() WHERE id = :id");
+            $this->stmt->bindValue(':nome', $produto->getNome());
+            $this->stmt->bindValue(':preco', $produto->getPreco());
+            $this->stmt->bindValue(':latitude', $produto->getLatitude());
+            $this->stmt->bindValue(':longetude', $produto->getLongetude());
+            $this->stmt->bindValue(':ativo', $produto->getAtivo());
+            $this->stmt->bindValue(':id', $produto->getId());
             $this->stmt->execute();
             $this->connection->commit();
         } catch (\Throwable $th) {
@@ -49,14 +49,14 @@ class ProdutoDao {
         
     }
     
-    public function deletar($produto) {
+    public function deletar(Produto $produto) {
         
         try {
             $this->connection->beginTransaction();
             $this->stmt = $this->connection->prepare(Constante::DELETE_PRODUTO);
-            $this->stmt->bindParam(':ativo', $produto->getAtivo());
-            $this->stmt->bindParam(':modificacao', $produto->getModificacao());
-            $this->stmt->bindParam(':id', $produto->getId());
+            $this->stmt->bindValue(':ativo', $produto->getAtivo());
+            $this->stmt->bindValue(':modificacao', $produto->getModificacao());
+            $this->stmt->bindValue(':id', $produto->getId());
             $this->stmt->execute();
             $this->connection->commit();
         } catch (\Throwable $th) {
@@ -66,12 +66,12 @@ class ProdutoDao {
         
     }
 
-    public function listar($produto) {
+    public function listar(Produto $produto) {
         
         try {
             $this->connection->beginTransaction();
-            $this->stmt = $this->connection->prepare(Constante::SELECT_PRODUTO);
-            $this->stmt->bindParam(':nome', $produto->getNome());
+            $this->stmt = $this->connection->prepare("select * from produto where nome = ?");
+            $this->stmt->bindValue(':nome', $produto->getNome());
             $this->stmt->execute();
             $this->connection->commit();
         } catch (\Throwable $th) {
@@ -84,13 +84,13 @@ class ProdutoDao {
     public function listarAll() {
         
         try {            
-            $this->stmt = $this->connection->prepare(Constante::SELECT_ALL_PRODUTO);            
+            $this->stmt = $this->connection->prepare("select * from produto");
             $this->stmt->execute();
             return $this->stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (\Throwable $th) {
             //throw $th;
         }
-        
+     
     }
 }
 ?>
