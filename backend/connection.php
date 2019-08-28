@@ -6,9 +6,7 @@ class Connection {
     
     public static $instance;
 
-    private function __construct() {
-        
-    }
+    private function __construct() { }
     
     public static function getInstance() {
         try {
@@ -18,7 +16,9 @@ class Connection {
                 self::$instance->setAttribute(PDO::ATTR_ORACLE_NULLS, PDO::NULL_EMPTY_STRING);
             }
         } catch (\Throwable $th) {
-            throw $th;
+            echo "Erro não foi possível conectar ao banco de dados!";
+            exit();
+            //throw $th;
         } 
         return self::$instance;
     }

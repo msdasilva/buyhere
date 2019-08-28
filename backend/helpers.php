@@ -29,3 +29,12 @@ function calculateAge($birthdate) {
       
     return $diff->y;
 }
+
+function debug($conteudo, $tipo) {
+    
+    echo "<pre>";
+    print_r($conteudo);
+    echo "</pre>";
+    ($tipo) ? exit() : "<br />";
+    
+}
