@@ -15,11 +15,11 @@ class ProdutoDao {
         
         try {
             $this->connection->beginTransaction();
-            $this->stmt = $this->connection->prepare("INSERT INTO produto (nome, preco, latitude, longetude, ativo, criacao) VALUES (:nome, :preco, :latitude, :longetude, :ativo, now())");
+            $this->stmt = $this->connection->prepare("INSERT INTO produto (nome, preco, latitude, longitude, ativo, criacao) VALUES (:nome, :preco, :latitude, :longetude, :ativo, now())");
             $this->stmt->bindValue(':nome', $produto->getNome());
             $this->stmt->bindValue(':preco', $produto->getPreco());
             $this->stmt->bindValue(':latitude', $produto->getLatitude());
-            $this->stmt->bindValue(':longetude', $produto->getLongetude());
+            $this->stmt->bindValue(':longitude', $produto->getLongitude());
             $this->stmt->bindValue(':ativo', $produto->getAtivo());
             $this->stmt->execute();
             $this->connection->commit();
@@ -33,11 +33,11 @@ class ProdutoDao {
         
         try {
             $this->connection->beginTransaction();
-            $this->stmt = $this->connection->prepare("UPDATE produto SET nome = :nome, preco = :preco, latitude = :latitude, longetude = :longetude, ativo = :ativo, modificacao = NOW() WHERE id = :id");
+            $this->stmt = $this->connection->prepare("UPDATE produto SET nome = :nome, preco = :preco, latitude = :latitude, longitude = :longitude, ativo = :ativo, modificacao = NOW() WHERE id = :id");
             $this->stmt->bindValue(':nome', $produto->getNome());
             $this->stmt->bindValue(':preco', $produto->getPreco());
             $this->stmt->bindValue(':latitude', $produto->getLatitude());
-            $this->stmt->bindValue(':longetude', $produto->getLongetude());
+            $this->stmt->bindValue(':longitude', $produto->getLongitude());
             $this->stmt->bindValue(':ativo', $produto->getAtivo());
             $this->stmt->bindValue(':id', $produto->getId());
             $this->stmt->execute();
@@ -82,7 +82,7 @@ class ProdutoDao {
     public function listarAll() {
         
         try {            
-            $this->stmt = $this->connection->prepare("select * from produto");
+            $this->stmt = $this->connection->prepare("SELECT Geo(-34.50696,-33.438673, latitude, longitude) AS Distancia, preco, nome FROM produto ORDER BY Distancia, preco ASC");
             $this->stmt->execute();
             return $this->stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (\Throwable $th) {

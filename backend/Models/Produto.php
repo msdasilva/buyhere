@@ -18,9 +18,9 @@
         public function getLatitude() { return $this->latitude; }
         public function setLatitude($latitude) { $this->latitude = $latitude; }
         
-        private $longetude;
-        public function getLongetude() { return $this->longetude; }
-        public function setLongetude($longetude) { $this->longetude = $longetude; }
+        private $longitude;
+        public function getLongitude() { return $this->longitude; }
+        public function setLongitude($longitude) { $this->longitude = $longitude; }
         
         private $ativo;
         public function getAtivo() { return $this->ativo; }
