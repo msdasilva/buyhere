@@ -22,10 +22,4 @@ function connect() {
 
 $con = connect();
 
-
-class Connection {
-
-  
-}
-
 ?>

@@ -1,6 +1,7 @@
 <?php
 
 require_once "../connection.php";
+require_once "../helpers.php";
 
 class ProdutoDao {
     
@@ -79,10 +80,11 @@ class ProdutoDao {
         
     }
 
-    public function listarAll() {
+    public function listarAll(Produto $produto) {
         
         try {            
-            $this->stmt = $this->connection->prepare("SELECT Geo(-34.50696,-33.438673, latitude, longitude) AS Distancia, preco, nome FROM produto ORDER BY Distancia, preco ASC");
+            $this->stmt = $this->connection->prepare("SELECT Geo('{$produto->getLatitude()}','s{$produto->getLongitude()}', latitude, longitude) AS Distancia, preco, nome FROM produto WHERE nome = :nome ORDER BY Distancia, preco ASC");
+            $this->stmt->bindValue(':nome', "LIKE '%{$produto->getNome()}'" );
             $this->stmt->execute();
             return $this->stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (\Throwable $th) {
@@ -90,5 +92,26 @@ class ProdutoDao {
         }
      
     }
+
+    public function loadProduto($idFornecedor, $nomeDoArquivo, $tamanhoDoArquivo) {
+
+		try {
+			if ($tamanhoDoArquivo > 0) {
+				
+				$file = fopen($nomeDoArquivo, "r");
+				
+				$this->deletar($idFornecedor);
+
+				while (($column = fgetcsv($file, 10000, ",")) !== FALSE) {            
+					$produto = new Produto($column[0], $column[1], $column[2], $column[3]);
+					UtilFactory::debug($produto, true);
+					$this->adicionar($produto);
+				}
+			}
+		} catch (Exception $e) {
+			throw $e;
+		}
+
+	}
 }
 ?>
